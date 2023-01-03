@@ -2,13 +2,12 @@ from django.contrib import admin
 from django.db.models import Count
 
 from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
-                            Favorite, Subscribe, RecipeIngredient)
+                            Favorite, RecipeIngredient)
 
 
 admin.site.register(Tag)
 admin.site.register(RecipeIngredient)
 admin.site.register(Favorite)
-admin.site.register(Subscribe)
 admin.site.register(ShoppingCart)
 
 

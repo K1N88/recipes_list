@@ -1,11 +1,11 @@
 from django_filters import rest_framework as filters
 
-from users.models import CustomUser
+from users.models import FoodgramUser
 from recipes.models import Recipe, Ingredient
 
 
 class RecipeFilter(filters.FilterSet):
-    author = filters.ModelChoiceFilter(queryset=CustomUser.objects.all())
+    author = filters.ModelChoiceFilter(queryset=FoodgramUser.objects.all())
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     is_favorited = filters.BooleanFilter(method='get_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(

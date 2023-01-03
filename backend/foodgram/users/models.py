@@ -1,33 +1,31 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import EmailValidator
+from django.conf import settings
 
-from foodgram.settings import MAX_LENGTH
 from users.validators import validate_username
 
 
-class CustomUser(AbstractUser):
+class FoodgramUser(AbstractUser):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     email = models.EmailField(
-        max_length=254,
+        max_length=settings.MAX_LENGTH,
         unique=True,
-        validators=[EmailValidator]
     )
     username = models.CharField(
-        max_length=MAX_LENGTH,
+        max_length=settings.MAX_LENGTH,
         unique=True,
         verbose_name='Логин пользователя',
         validators=[validate_username],
     )
     first_name = models.CharField(
-        max_length=MAX_LENGTH,
+        max_length=settings.MAX_LENGTH,
         verbose_name='Имя пользователя'
     )
     last_name = models.CharField(
-        max_length=MAX_LENGTH,
+        max_length=settings.MAX_LENGTH,
         verbose_name='Фамилия пользователя'
     )
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'password']
 
     class Meta:
         constraints = [
@@ -41,4 +39,31 @@ class CustomUser(AbstractUser):
         ordering = ('username',)
 
     def __str__(self):
-        return self.username[:15]
+        return self.username
+
+
+class Subscribe(models.Model):
+    user = models.ForeignKey(
+        FoodgramUser,
+        on_delete=models.CASCADE,
+        related_name='subscriber',
+        verbose_name='подписчик',
+    )
+    author = models.ForeignKey(
+        FoodgramUser,
+        on_delete=models.CASCADE,
+        related_name='subscribing',
+        verbose_name='автор рецепта',
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='author_user_unique',
+                fields=['author', 'user'],
+            ),
+            models.CheckConstraint(
+                name="author_not_user",
+                check=~models.Q(author=models.F('user')),
+            ),
+        ]

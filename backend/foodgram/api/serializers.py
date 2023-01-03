@@ -1,12 +1,49 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import (Ingredient, Tag, Recipe, Favorite,
-                            Subscribe, RecipeIngredient, ShoppingCart)
-from users.serializers import AuthorSerializer
-from users.models import CustomUser
+from recipes.models import (Ingredient, Tag, Recipe,
+                            RecipeIngredient)
+from users.models import FoodgramUser
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FoodgramUser
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )
+
+    def get_is_subscribed(self, obj):
+        return FoodgramUser.objects.filter(subscriber__author=obj).exists()
+
+
+class SubscribeSerializer(AuthorSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FoodgramUser
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(
+            author=obj
+        ).count()
+
+    def get_recipes(self, obj):
+        recipes = Recipe.objects.filter(
+            author=obj
+        )
+        return FavoriteSerializer(recipes, many=True).data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -34,6 +71,26 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
+def set_ingredients(recipe, ingredients):
+    RecipeIngredient.objects.bulk_create([RecipeIngredient(
+        recipe=recipe,
+        ingredient=ingredient['id'],
+        amount=ingredient['amount']
+    ) for ingredient in ingredients])
+
+
+def is_favorited(obj):
+    return FoodgramUser.objects.filter(
+        favorite_user__recipe=obj
+    ).exists()
+
+
+def is_in_shopping_cart(obj):
+    return FoodgramUser.objects.filter(
+        cart_user__recipe=obj
+    ).exists()
+
+
 class RecipePostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
     image = Base64ImageField(max_length=None, use_url=True)
@@ -53,26 +110,17 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        return Favorite.objects.filter(
-            user=self.context['request'].user, recipe=obj
-        ).exists()
+        return is_favorited(obj)
 
     def get_is_in_shopping_cart(self, obj):
-        return ShoppingCart.objects.filter(
-            user=self.context['request'].user, recipe=obj
-        ).exists()
+        return is_in_shopping_cart(obj)
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
-                recipe=recipe,
-                ingredient=ingredient['id'],
-                amount=ingredient['amount']
-            )
+        set_ingredients(recipe, ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -89,12 +137,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         RecipeIngredient.objects.filter(
                 recipe=instance,
             ).delete()
-        for ingredient in ingredients:
-            RecipeIngredient.objects.create(
-                recipe=instance,
-                ingredient=ingredient['id'],
-                amount=ingredient['amount']
-            )
+        set_ingredients(instance, ingredients)
         return instance
 
 
@@ -112,18 +155,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        if self.context['request'].user.is_authenticated:
-            return Favorite.objects.filter(
-                user=self.context['request'].user, recipe=obj
-            ).exists()
-        return False
+        return is_favorited(obj)
 
     def get_is_in_shopping_cart(self, obj):
-        if self.context['request'].user.is_authenticated:
-            return ShoppingCart.objects.filter(
-                user=self.context['request'].user, recipe=obj
-            ).exists()
-        return False
+        return is_in_shopping_cart(obj)
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredient.objects.filter(recipe=obj)
@@ -134,61 +169,3 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-
-
-class SubscribeSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CustomUser
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
-
-    def get_is_subscribed(self, obj):
-        return Subscribe.objects.filter(
-            user=self.context['request'].user, author=obj
-        ).exists()
-
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(
-            author=obj
-        ).count()
-
-    def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(
-            author=obj
-        )
-        return FavoriteSerializer(recipes, many=True).data
-
-
-class SubscribePostSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CustomUser
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
-
-    def get_is_subscribed(self, obj):
-        return True
-
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(
-            author=obj
-        ).count()
-
-    def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(
-            author=obj
-        )
-        return FavoriteSerializer(recipes, many=True).data
-
-
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ShoppingCart
-        fields = ('__all__')

@@ -47,11 +47,14 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='recipes/',
                               verbose_name='изображение блюда')
     text = models.TextField(verbose_name='текст рецепта')
-    cooking_time = models.IntegerField(verbose_name='время приготовления')
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='время приготовления'
+    )
     tags = models.ManyToManyField(Tag, related_name='tags')
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipeIngredient'
+        through='RecipeIngredient',
+        related_name='ingredients'
     )
 
     class Meta:
@@ -65,7 +68,8 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        verbose_name='ингридиент'
+        verbose_name='ингридиент',
+        related_name='+',
     )
     recipe = models.ForeignKey(
         Recipe,
@@ -73,10 +77,11 @@ class RecipeIngredient(models.Model):
         related_name='ingredient_recipe',
         verbose_name='рецепт'
     )
-    amount = models.IntegerField(verbose_name='количество')
+    amount = models.PositiveSmallIntegerField(verbose_name='количество')
 
     def __str__(self):
-        return f'рецепт {self.recipe} - ингридиент {self.ingredient}'
+        return f'''рецепт {self.recipe}
+                   ингридиент {self.ingredient} количество {self.amount}'''
 
 
 class Favorite(models.Model):
@@ -90,7 +95,6 @@ class Favorite(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite',  # получаем queryset в фильтре стр 18
         verbose_name='любимый рецепт',
     )
 
@@ -106,6 +110,5 @@ class ShoppingCart(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='cart',  # получаем queryset в фильтре стр 23
         verbose_name='рецепт для покупки',
     )

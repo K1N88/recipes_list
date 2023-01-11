@@ -1,6 +1,6 @@
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly,
@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from users.models import FoodgramUser, Subscribe
 from recipes.models import (Ingredient, Tag, Recipe, Favorite,
                             ShoppingCart, RecipeIngredient)
-from api.filters import RecipeFilter, IngredientFilter
+from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, TagSerializer,
                              RecipeSerializer, FavoriteSerializer,
                              SubscribeSerializer, RecipePostSerializer)
@@ -22,12 +22,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
-    filterset_class = IngredientFilter
-    '''
-    через стандартный SearchFilter поиск по ингридиентам не работает
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
-    '''
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -71,27 +67,28 @@ def post_method(user, recipe, model):
 @permission_classes([IsAuthenticated])
 def favorite(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
-    model = Favorite
-    user = get_object_or_404(FoodgramUser, username=request.user)
     if request.method == 'DELETE':
-        return delete_method(user, recipe, model)
-    return post_method(user, recipe, model)
+        return delete_method(request.user, recipe, Favorite)
+    return post_method(request.user, recipe, Favorite)
 
 
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def shopping_cart(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
-    model = ShoppingCart
-    user = get_object_or_404(FoodgramUser, username=request.user)
     if request.method == 'DELETE':
-        return delete_method(user, recipe, model)
-    return post_method(user, recipe, model)
+        return delete_method(request.user, recipe, ShoppingCart)
+    return post_method(request.user, recipe, ShoppingCart)
 
 
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     serializer_class = SubscribeSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
     def get_queryset(self):
         return FoodgramUser.objects.filter(subscribing__user=self.request.user)
@@ -107,8 +104,8 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         author = get_object_or_404(FoodgramUser, pk=self.kwargs.get("pk"))
         Subscribe.objects.create(user=request.user, author=author)
-        return Response(SubscribeSerializer(author).data,
-                        status=status.HTTP_201_CREATED)
+        serializer = SubscribeSerializer(author, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CartViewSet(APIView):

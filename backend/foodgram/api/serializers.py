@@ -1,10 +1,9 @@
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from drf_extra_fields.fields import Base64ImageField
-
-from recipes.models import (Ingredient, Tag, Recipe,
-                            RecipeIngredient)
-from users.models import FoodgramUser
+from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
+                            RecipeIngredient, Favorite)
+from users.models import FoodgramUser, Subscribe
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -12,17 +11,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FoodgramUser
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed'
-        )
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed')
 
     def get_is_subscribed(self, obj):
-        return FoodgramUser.objects.filter(subscriber__author=obj).exists()
+        return self.context['request'].user.subscriber.all().exists()
 
 
 class SubscribeSerializer(AuthorSerializer):
@@ -35,15 +28,12 @@ class SubscribeSerializer(AuthorSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(
-            author=obj
-        ).count()
+        return obj.recipes.all().count()
 
     def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(
-            author=obj
-        )
-        return FavoriteSerializer(recipes, many=True).data
+        recipes_limit = self.context['request'].query_params['recipes_limit']
+        return FavoriteSerializer(obj.recipes.all()[:int(recipes_limit)],
+                                  many=True).data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -79,13 +69,13 @@ def set_ingredients(recipe, ingredients):
     ) for ingredient in ingredients])
 
 
-def is_favorited(obj):
+def is_favorited(self, obj):
     return FoodgramUser.objects.filter(
         favorite_user__recipe=obj
     ).exists()
 
 
-def is_in_shopping_cart(obj):
+def is_in_shopping_cart(self, obj):
     return FoodgramUser.objects.filter(
         cart_user__recipe=obj
     ).exists()
@@ -110,10 +100,10 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        return is_favorited(obj)
+        return is_favorited(self, obj)
 
     def get_is_in_shopping_cart(self, obj):
-        return is_in_shopping_cart(obj)
+        return is_in_shopping_cart(self, obj)
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')
@@ -155,10 +145,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        return is_favorited(obj)
+        return is_favorited(self, obj)
 
     def get_is_in_shopping_cart(self, obj):
-        return is_in_shopping_cart(obj)
+        return is_in_shopping_cart(self, obj)
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredient.objects.filter(recipe=obj)

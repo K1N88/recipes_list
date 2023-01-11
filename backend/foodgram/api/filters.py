@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 
 from users.models import FoodgramUser
-from recipes.models import Recipe, Ingredient
+from recipes.models import Recipe
 
 
 class RecipeFilter(filters.FilterSet):
@@ -19,17 +19,9 @@ class RecipeFilter(filters.FilterSet):
 
     def get_is_in_shopping_cart(self, queryset, name, value):
         if self.request.user.is_authenticated and value:
-            return queryset.filter(cart__user=self.request.user)
+            return queryset.filter(shoppingcart__user=self.request.user)
         return queryset
 
     class Meta:
         model = Recipe
         fields = ('author', 'tags')
-
-
-class IngredientFilter(filters.FilterSet):
-    name = filters.CharFilter(lookup_expr='icontains')
-
-    class Meta:
-        model = Ingredient
-        fields = ('name',)

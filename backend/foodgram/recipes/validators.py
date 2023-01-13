@@ -2,7 +2,7 @@ from django.core.validators import RegexValidator
 
 
 ANTI_PATTERN = r'[^\w\s]'
-PATTERN_HEX = r'^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$'
+PATTERN_HEX = r'^#[0-9a-fA-F]{3,6}$'
 
 
 def validate_name(data):

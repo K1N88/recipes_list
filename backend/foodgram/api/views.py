@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets, filters
@@ -126,8 +127,11 @@ class CartViewSet(APIView):
             i_name = i.get('ingredient__name')
             i_unit = i.get('ingredient__measurement_unit')
             data.append(f'{i_name} ({i_unit}) - {i.get("sum_amount")}')
-        return Response(
-            '\n'.join(data),
+        return HttpResponse(
+            '\r\n'.join(data),
             status=status.HTTP_200_OK,
-            content_type='text/plain'
+            headers={
+                'Content-Type': 'text/plain',
+                'Content-Disposition': 'attachment; filename="shop-list.txt"'
+            }
         )

@@ -12,7 +12,9 @@ router.register('ingredients', IngredientViewSet, basename='ingredients')
 router.register('tags', TagViewSet, basename='tags')
 router.register('recipes', RecipeViewSet, basename='recipes')
 subscriptions = SubscriptionsViewSet.as_view({'get': 'list'})
-subscribe = SubscriptionsViewSet.as_view({'post': 'create', 'delete': 'destroy'})
+subscribe = SubscriptionsViewSet.as_view({
+    'post': 'create', 'delete': 'destroy'
+})
 urlpatterns = [
     path('users/subscriptions/', subscriptions, name='subscriptions-list'),
     path('users/<int:pk>/subscribe/', subscribe, name='subscribe-detail'),

@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from recipes.models import Ingredient
 
 
-class LoadCommand(BaseCommand):
+class Command(BaseCommand):
     def handle(self, *args, **options):
         with open('recipes/data/ingredients.csv', encoding='utf-8') as i:
             reader = csv.reader(i)

@@ -2,8 +2,6 @@ version: '3.3'
 services:
   frontend:
     image: k1n8/foodgram_front:latest
-    volumes:
-      - ./frontend/:/app/result_build/
   db:
     image: postgres:13.0-alpine
     volumes:

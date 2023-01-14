@@ -45,9 +45,9 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'drf_extra_fields',
-    'foodgram.api',
-    'foodgram.recipes',
-    'foodgram.users',
+    'api',
+    'recipes',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'foodgram.wsgi.application'
+WSGI_APPLICATION = 'foodgram.foodgram.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

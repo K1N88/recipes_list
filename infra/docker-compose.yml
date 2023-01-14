@@ -2,6 +2,8 @@ version: '3.3'
 services:
   frontend:
     image: k1n8/foodgram_front:latest
+    volumes:
+      - front_value:/app/result_build/
   db:
     image: postgres:13.0-alpine
     volumes:
@@ -24,8 +26,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
+      - front_value:/usr/share/nginx/html/
+      - ./docs/:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/staticfiles/
       - media_value:/var/html/media/
     depends_on:
@@ -34,3 +36,4 @@ volumes:
   static_value:
   media_value:
   db_value:
+  front_value:

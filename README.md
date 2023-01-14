@@ -5,7 +5,6 @@
 - [Технологический стек](#Технологический-стек)
 - [Запуск проекта](#Запуск-проекта)
 - [Примеры работы с проектом](#Примеры-работы-с-проектом)
-- [Инструкции для накачки базы из CSV-файлов](#Инструкции-для-накачки-базы-из-CSV-файлов)
 - [Над проектом работали](#Над-проектом-работали)
 
 ### Описание проекта:
@@ -28,27 +27,36 @@
 ### Запуск проекта:
 
 Клонировать репозиторий и перейти в него в командной строке:
-
 ```
 git clone git@github.com:K1N88/foodgram-project-react.git
 ```
-
-Создать и активировать виртуальное окружение:
+Сборка /backend в контейнер:
 ```
-python3 -m venv venv
+sudo docker build -t foodgram .
 ```
-Установить зависимости из файла requirements.txt:
+Сборка /frontend в контейнер:
 ```
-python3 -m pip install --upgrade pip
-pip install -r requirements.txt
+sudo docker build -t foodgram_front .
 ```
-Выполнить миграции:
+Запуск контейнеров:
 ```
-python3 manage.py migrate
+sudo docker-compose up -d --build
 ```
-Запустить проект:
+Выполните миграции:
 ```
-python3 manage.py runserver
+sudo docker exec foodgram_web_1 python manage.py migrate
+```
+Соберите статику:
+```
+sudo docker exec foodgram_web_1 python manage.py collectstatic --no-input
+```
+Загрузите ингридиенты:
+```
+sudo docker exec foodgram_web_1 python manage.py from_csv_to_base
+```
+Создайте суперпользователя:
+```
+sudo docker exec -i -t foodgram_web_1 python manage.py createsuperuser
 ```
 
 ### Примеры работы с проектом:
@@ -57,7 +65,7 @@ python3 manage.py runserver
 разрешённых методов, с примерами запросов, ответов и кода Вы сможете посмотреть 
 по адресу:
 
-[http://127.0.0.1:8000/api/docs/redoc.html](http://127.0.0.1:8000/api/docs/redoc.html)
+[http://localhost/api/docs/redoc.html](http://localhost/api/docs/redoc.html)
 
 ### Над проектом работал:
 - [Константин Назаров](https://github.com/K1N88)

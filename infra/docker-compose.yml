@@ -1,5 +1,7 @@
 version: '3.3'
 services:
+  frontend:
+    image: k1n8/foodgram_front:latest
   db:
     image: postgres:13.0-alpine
     volumes:
@@ -7,7 +9,7 @@ services:
     env_file:
       - ./.env
   web:
-    image: k1n8/foodgram:latest
+    image: k1n8/foodgram_back:latest
     restart: always
     volumes:
       - static_value:/app/staticfiles/
@@ -28,12 +30,6 @@ services:
       - media_value:/var/html/media/
     depends_on:
       - web
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
 volumes:
   static_value:
   media_value:

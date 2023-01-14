@@ -45,9 +45,9 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'drf_extra_fields',
-    'api',
-    'recipes',
-    'users',
+    'foodgram.api',
+    'foodgram.recipes',
+    'foodgram.users',
 ]
 
 MIDDLEWARE = [

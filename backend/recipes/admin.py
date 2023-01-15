@@ -6,9 +6,12 @@ from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
 
 
 admin.site.register(Tag)
-admin.site.register(RecipeIngredient)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
+
+
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
 
 
 @admin.register(Recipe)
@@ -17,6 +20,9 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags', 'author', 'name')
     search_fields = ('name',)
     ordering = ('author',)
+    inlines = [
+        RecipeIngredientInline,
+    ]
 
     def in_favorite(self, obj):
         result = Favorite.objects.filter(recipe=obj).aggregate(Count("recipe"))

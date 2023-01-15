@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator
 
 from recipes.validators import validate_name, validate_hex
 
@@ -48,7 +49,10 @@ class Recipe(models.Model):
                               verbose_name='изображение блюда')
     text = models.TextField(verbose_name='текст рецепта')
     cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='время приготовления'
+        verbose_name='время приготовления',
+        validators=[
+            MinValueValidator(1, message='число должно быть положительным')
+        ]
     )
     tags = models.ManyToManyField(Tag, related_name='tags')
     ingredients = models.ManyToManyField(
@@ -77,7 +81,12 @@ class RecipeIngredient(models.Model):
         related_name='ingredient_recipe',
         verbose_name='рецепт'
     )
-    amount = models.PositiveSmallIntegerField(verbose_name='количество')
+    amount = models.PositiveSmallIntegerField(
+        verbose_name='количество',
+        validators=[
+            MinValueValidator(1, message='число должно быть положительным')
+        ]
+    )
 
     def __str__(self):
         return f'''рецепт {self.recipe}

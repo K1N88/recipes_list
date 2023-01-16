@@ -1,7 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (Ingredient, Tag, Recipe,
+from recipes.models import (Ingredient, Tag, Recipe, Subscribe
                             RecipeIngredient)
 from users.models import FoodgramUser
 
@@ -15,8 +15,9 @@ class AuthorSerializer(serializers.ModelSerializer):
                   'is_subscribed')
 
     def get_is_subscribed(self, obj):
-        return FoodgramUser.objects.filter(
-            user__subscribing=obj
+        return Subscribe.objects.filter(
+            user=self.context['request'].user
+            author=obj
         ).exists()
         # return self.context['request'].user.subscriber.all().exists()
 

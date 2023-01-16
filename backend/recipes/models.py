@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
-# from django.core.validators import MinValueValidator
 
 from recipes.validators import validate_name, validate_hex
 

@@ -20,9 +20,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(AuthorSerializer):
     email = serializers.ReadOnlyField(source='user.email')
-    username = serializers.ReadOnlyField(source='user.username')
-    first_name = serializers.ReadOnlyField(source='user.first_name')
-    last_name = serializers.ReadOnlyField(source='user.last_name')
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 

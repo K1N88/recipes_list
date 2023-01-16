@@ -40,7 +40,9 @@ class SubscribeSerializer(AuthorSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj):
-        return obj.recipes.all().count()
+        return Recipe.objects.filter(
+            author=obj.author
+        ).count()
 
     def get_recipes(self, obj):
         recipes_limit_default = 3

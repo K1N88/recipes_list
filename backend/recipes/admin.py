@@ -13,6 +13,7 @@ admin.site.register(ShoppingCart)
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
+    list_display = ('name', 'measurement_unit')
 
 
 @admin.register(Recipe)

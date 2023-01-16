@@ -24,7 +24,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(AuthorSerializer):
-    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -40,9 +39,6 @@ class SubscribeSerializer(AuthorSerializer):
         recipes_limit = self.context['request'].query_params['recipes_limit']
         return FavoriteSerializer(obj.recipes.all()[:int(recipes_limit)],
                                   many=True).data
-
-    def get_is_subscribed(self, obj):
-        return self.context['request'].user.subscriber.all().exists()
 
 
 class TagSerializer(serializers.ModelSerializer):

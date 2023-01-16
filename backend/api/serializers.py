@@ -7,12 +7,6 @@ from users.models import FoodgramUser
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    '''
-    id = serializers.ReadOnlyField(source='author.id')
-    email = serializers.ReadOnlyField(source='author.email')
-    username = serializers.ReadOnlyField(source='author.username')
-    first_name = serializers.ReadOnlyField(source='author.first_name')
-    last_name = serializers.ReadOnlyField(source='author.last_name')'''
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -30,6 +24,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(AuthorSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=FoodgramUser.objects.all()
+    )
+    email = serializers.ReadOnlyField(source='user.email')
+    username = serializers.ReadOnlyField(source='user.username')
+    first_name = serializers.ReadOnlyField(source='user.first_name')
+    last_name = serializers.ReadOnlyField(source='user.last_name')
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 

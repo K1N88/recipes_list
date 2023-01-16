@@ -15,11 +15,6 @@ class AuthorSerializer(serializers.ModelSerializer):
                   'is_subscribed')
 
     def get_is_subscribed(self, obj):
-        '''
-        return Subscribe.objects.filter(
-            user=self.context['request'].user,
-            author=obj
-        ).exists()'''
         return self.context['request'].user.subscriber.all().exists()
 
 
@@ -122,6 +117,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
         fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time')
+
+    def validate_ingredients(self, value):
+        if value is None:
+            raise serializers.ValidationError('укажите ингридиенты')
+        return value
 
     def get_is_favorited(self, obj):
         return is_favorited(self, obj)

@@ -104,8 +104,8 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         author = get_object_or_404(FoodgramUser, pk=self.kwargs.get("pk"))
-        follow = Subscribe.objects.create(user=request.user, author=author)
-        serializer = SubscribeSerializer(follow, context={'request': request})
+        Subscribe.objects.create(user=request.user, author=author)
+        serializer = SubscribeSerializer(author, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

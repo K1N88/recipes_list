@@ -50,9 +50,6 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='текст рецепта')
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='время приготовления',
-        validators=[
-            MinValueValidator(1, message='число должно быть положительным')
-        ]
     )
     tags = models.ManyToManyField(Tag, related_name='tags')
     ingredients = models.ManyToManyField(
@@ -83,9 +80,6 @@ class RecipeIngredient(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='количество',
-        validators=[
-            MinValueValidator(1, message='число должно быть положительным')
-        ]
     )
 
     def __str__(self):

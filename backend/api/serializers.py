@@ -119,7 +119,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def validate(self, data):
-        if data['ingredients'] is None:
+        if 'ingredients' not in data:
             raise serializers.ValidationError('укажите ингридиенты')
         return data
 

@@ -28,6 +28,7 @@ class SubscribeSerializer(AuthorSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj):
+        print(obj)
         return Recipe.objects.filter(author=obj).count()
 
     def get_recipes(self, obj):

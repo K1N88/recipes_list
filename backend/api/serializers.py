@@ -15,7 +15,10 @@ class AuthorSerializer(serializers.ModelSerializer):
                   'is_subscribed')
 
     def get_is_subscribed(self, obj):
-        return self.context['request'].user.subscriber.all().exists()
+        return FoodgramUser.objects.filter(
+            user__subscribing=obj
+        ).exists()
+        # return self.context['request'].user.subscriber.all().exists()
 
 
 class SubscribeSerializer(AuthorSerializer):

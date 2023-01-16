@@ -12,6 +12,7 @@ admin.site.register(ShoppingCart)
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
+    extra = 1
 
 
 @admin.register(Recipe)

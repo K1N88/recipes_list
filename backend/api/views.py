@@ -92,7 +92,7 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
         return context
 
     def get_queryset(self):
-        return FoodgramUser.objects.filter(subscribing__user=self.request.user)
+        return self.request.user.subscriber.all()
 
     def destroy(self, request, *args, **kwargs):
         author = get_object_or_404(FoodgramUser, pk=self.kwargs.get("pk"))

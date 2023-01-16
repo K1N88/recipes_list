@@ -118,10 +118,10 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time')
 
-    def validate_ingredients(self, value):
-        if value is None:
+    def validate(self, data):
+        if data['ingredients'] is None:
             raise serializers.ValidationError('укажите ингридиенты')
-        return value
+        return data
 
     def get_is_favorited(self, obj):
         return is_favorited(self, obj)

@@ -19,13 +19,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(AuthorSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=FoodgramUser.objects.all()
-    )
-    email = serializers.ReadOnlyField(source='user.email')
-    username = serializers.ReadOnlyField(source='user.username')
-    first_name = serializers.ReadOnlyField(source='user.first_name')
-    last_name = serializers.ReadOnlyField(source='user.last_name')
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -35,9 +33,7 @@ class SubscribeSerializer(AuthorSerializer):
                   'is_subscribed', 'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(
-            author=obj
-        ).count()
+        return Recipe.objects.filter(author=obj).count()
 
     def get_recipes(self, obj):
         recipes_limit_default = 3
@@ -48,9 +44,7 @@ class SubscribeSerializer(AuthorSerializer):
         else:
             recipes_limit = recipes_limit_default
         return FavoriteSerializer(
-            Recipe.objects.filter(
-                author=obj
-            )[:int(recipes_limit)],
+            Recipe.objects.filter(author=obj)[:int(recipes_limit)],
             many=True
         ).data
 

@@ -41,7 +41,13 @@ class SubscribeSerializer(AuthorSerializer):
         return obj.recipes.all().count()
 
     def get_recipes(self, obj):
-        recipes_limit = self.context['request'].query_params['recipes_limit']
+        recipes_limit_default = 3
+        if 'recipes_limit' in self.context['request'].query_params.keys():
+            recipes_limit = self.context['request'].query_params[
+                'recipes_limit'
+            ]
+        else:
+            recipes_limit = recipes_limit_default
         return FavoriteSerializer(obj.recipes.all()[:int(recipes_limit)],
                                   many=True).data
 

@@ -49,7 +49,7 @@ class SubscribeSerializer(AuthorSerializer):
         else:
             recipes_limit = recipes_limit_default
         return FavoriteSerializer(
-            obj.subscribing.recipes.all()[:int(recipes_limit)], many=True
+            obj.author__subscribing.recipes.all()[:int(recipes_limit)], many=True
         ).data
 
 

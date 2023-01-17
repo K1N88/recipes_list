@@ -109,11 +109,6 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time')
 
-    def validate(self, data):
-        if 'ingredients' not in data:
-            raise serializers.ValidationError('укажите ингридиенты')
-        return data
-
     def get_is_favorited(self, obj):
         return is_favorited(self, obj)
 

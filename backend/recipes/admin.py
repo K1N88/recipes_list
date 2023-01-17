@@ -10,10 +10,16 @@ admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
 
 
+class RecipeIngredientAdminForm(forms.ModelForm):
+    class Meta:
+        model = RecipeIngredient
+        fields = ['ingredient', 'amount']
+
+
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    list_display = ('name', 'measurement_unit')
+    form = RecipeIngredientAdminForm
 
 
 @admin.register(Recipe)

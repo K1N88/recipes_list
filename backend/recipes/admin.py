@@ -18,9 +18,6 @@ class IngredientInline(admin.TabularInline):
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     min_num = 1
-    inlines = [
-        IngredientInline,
-    ]
 
 
 @admin.register(Recipe)
@@ -30,7 +27,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     ordering = ('author',)
     inlines = [
-        RecipeIngredientInline,
+        RecipeIngredientInline, Ingredient
     ]
 
     def in_favorite(self, obj):

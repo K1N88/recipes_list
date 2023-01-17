@@ -65,7 +65,7 @@ sudo docker exec -i -t foodgram_web_1 python manage.py createsuperuser
 разрешённых методов, с примерами запросов, ответов и кода Вы сможете посмотреть 
 по адресу:
 
-[http://localhost/api/docs/redoc.html](http://localhost/api/docs/redoc.html)
+[http://158.160.8.98/api/docs/redoc.html](http://158.160.8.98/api/docs/redoc.html)
 
 ### Над проектом работал:
 - [Константин Назаров](https://github.com/K1N88)

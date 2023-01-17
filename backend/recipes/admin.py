@@ -11,18 +11,18 @@ admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
 
 
+'''
 class RecipeIngredientAdminForm(forms.ModelForm):
     amount = forms.IntegerField(min_value=1)
 
     class Meta:
         model = RecipeIngredient
-        fields = ['ingredient', 'amount']
+        fields = ['ingredient', 'amount']'''
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
-    extra = 1
-    form = RecipeIngredientAdminForm
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -31,10 +31,9 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags', 'author', 'name')
     search_fields = ('name',)
     ordering = ('author',)
-    '''
     inlines = [
         RecipeIngredientInline,
-    ]'''
+    ]
 
     def in_favorite(self, obj):
         result = Favorite.objects.filter(recipe=obj).aggregate(Count("recipe"))

@@ -31,9 +31,10 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags', 'author', 'name')
     search_fields = ('name',)
     ordering = ('author',)
+    '''
     inlines = [
         RecipeIngredientInline,
-    ]
+    ]'''
 
     def in_favorite(self, obj):
         result = Favorite.objects.filter(recipe=obj).aggregate(Count("recipe"))

@@ -15,14 +15,6 @@ class RecipeIngredientInline(admin.TabularInline):
     min_num = 1
 
 
-class IngredientInline(admin.TabularInline):
-    model = Ingredient
-    readonly_fields = ('name', 'measurement_unit')
-    inlines = [
-        RecipeIngredientInline,
-    ]
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'name', 'in_favorite')
@@ -30,7 +22,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     ordering = ('author',)
     inlines = [
-        IngredientInline,
+        RecipeIngredientInline,
     ]
 
     def in_favorite(self, obj):

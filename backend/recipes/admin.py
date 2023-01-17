@@ -10,14 +10,17 @@ admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
 
 
-class IngredientInline(admin.TabularInline):
-    model = Ingredient
-    readonly_fields = ('name', 'measurement_unit')
-
-
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     min_num = 1
+
+
+class IngredientInline(admin.TabularInline):
+    model = Ingredient
+    readonly_fields = ('name', 'measurement_unit')
+    inlines = [
+        RecipeIngredientInline,
+    ]
 
 
 @admin.register(Recipe)
@@ -27,7 +30,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     ordering = ('author',)
     inlines = [
-        RecipeIngredientInline, Ingredient
+        IngredientInline,
     ]
 
     def in_favorite(self, obj):

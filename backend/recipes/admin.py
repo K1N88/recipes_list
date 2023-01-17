@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.db.models import Count
-# from django import forms
 
 from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
                             Favorite, RecipeIngredient)
@@ -11,18 +10,17 @@ admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
 
 
-'''
-class RecipeIngredientAdminForm(forms.ModelForm):
-    amount = forms.IntegerField(min_value=1)
-
-    class Meta:
-        model = RecipeIngredient
-        fields = ['ingredient', 'amount']'''
+class IngredientInline(admin.TabularInline):
+    model = Ingredient
+    readonly_fields = ('name', 'measurement_unit')
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     min_num = 1
+    inlines = [
+        IngredientInline,
+    ]
 
 
 @admin.register(Recipe)

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import Count
+from django.forms import ModelForm
 
 from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
                             Favorite, RecipeIngredient)
@@ -10,7 +11,7 @@ admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
 
 
-class RecipeIngredientAdminForm(forms.ModelForm):
+class RecipeIngredientAdminForm(ModelForm):
     class Meta:
         model = RecipeIngredient
         fields = ['ingredient', 'amount']

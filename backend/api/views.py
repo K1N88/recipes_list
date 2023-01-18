@@ -8,6 +8,7 @@ from rest_framework.permissions import (IsAuthenticated,
                                         SAFE_METHODS)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from users.models import FoodgramUser, Subscribe
 from recipes.models import (Ingredient, Tag, Recipe, Favorite,
@@ -16,6 +17,10 @@ from api.filters import RecipeFilter
 from api.serializers import (IngredientSerializer, TagSerializer,
                              RecipeSerializer, FavoriteSerializer,
                              SubscribeSerializer, RecipePostSerializer)
+
+
+class SetPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -38,6 +43,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Recipe.objects.all()
     filterset_class = RecipeFilter
+    pagination_class = SetPagination
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -85,6 +91,7 @@ def shopping_cart(request, pk):
 class SubscriptionsViewSet(viewsets.ModelViewSet):
     serializer_class = SubscribeSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = SetPagination
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -111,6 +118,7 @@ class SubscriptionsViewSet(viewsets.ModelViewSet):
 
 class CartViewSet(APIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = SetPagination
 
     def get(self, request):
         recipes_id = request.user.cart_user.values_list('recipe__id')

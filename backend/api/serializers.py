@@ -81,7 +81,7 @@ def set_ingredients(recipe, ingredients):
 
 def in_list(self, obj, model):
     if not self.context['request'].user.is_authenticated:
-            return False
+        return False
     return model.objects.filter(
         user=self.context['request'].user, recipe=obj
     ).exists()

@@ -130,7 +130,7 @@ class CartViewSet(APIView):
         ).order_by('ingredient__name').annotate(sum_amount=Sum('amount'))
         data = []
         data.append('список покупок')
-        data.append('ингридиент, ед. - количество')
+        data.append('ингридиент (ед.) - количество')
         for i in ingredients:
             i_name = i.get('ingredient__name')
             i_unit = i.get('ingredient__measurement_unit')

@@ -16,12 +16,12 @@ subscribe = SubscriptionsViewSet.as_view({
     'post': 'create', 'delete': 'destroy'
 })
 urlpatterns = [
+    path('auth/', include('djoser.urls.authtoken')),
+    path('', include('djoser.urls')),
+    path('', include(router.urls)),
     path('users/subscriptions/', subscriptions, name='subscriptions-list'),
     path('users/<int:pk>/subscribe/', subscribe, name='subscribe-detail'),
     path('recipes/<int:pk>/favorite/', favorite),
     path('recipes/<int:pk>/shopping_cart/', shopping_cart),
     path('recipes/download_shopping_cart/', CartViewSet.as_view()),
-    path('auth/', include('djoser.urls.authtoken')),
-    path('', include('djoser.urls')),
-    path('', include(router.urls)),
 ]

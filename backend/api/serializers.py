@@ -149,10 +149,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        return is_favorited(self, obj)
+        return in_list(self, obj, Favorite)
 
     def get_is_in_shopping_cart(self, obj):
-        return is_in_shopping_cart(self, obj)
+        return in_list(self, obj, ShoppingCart)
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredient.objects.filter(recipe=obj)

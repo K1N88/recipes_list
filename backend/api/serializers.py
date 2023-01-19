@@ -1,8 +1,8 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (Ingredient, Tag, Recipe,
-                            RecipeIngredient)
+from recipes.models import (Ingredient, Tag, Recipe, Favorite,
+                            RecipeIngredient, ShoppingCart)
 from users.models import FoodgramUser
 
 
@@ -80,13 +80,13 @@ def set_ingredients(recipe, ingredients):
 
 
 def is_favorited(self, obj):
-    return FoodgramUser.objects.filter(
+    return Favorite.objects.filter(
         favorite_user__recipe=obj
     ).exists()
 
 
 def is_in_shopping_cart(self, obj):
-    return FoodgramUser.objects.filter(
+    return ShoppingCart.objects.filter(
         cart_user__recipe=obj
     ).exists()
 

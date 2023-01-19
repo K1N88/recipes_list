@@ -79,15 +79,9 @@ def set_ingredients(recipe, ingredients):
     ) for ingredient in ingredients])
 
 
-def is_favorited(self, obj):
-    return Favorite.objects.filter(
-        favorite_user__recipe=obj
-    ).exists()
-
-
-def is_in_shopping_cart(self, obj):
-    return ShoppingCart.objects.filter(
-        cart_user__recipe=obj
+def in_list(self, obj, model):
+    return model.objects.filter(
+        user=self.context['request'].user, recipe=obj
     ).exists()
 
 
@@ -110,10 +104,10 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'cooking_time')
 
     def get_is_favorited(self, obj):
-        return is_favorited(self, obj)
+        return in_list(self, obj, Favorite)
 
     def get_is_in_shopping_cart(self, obj):
-        return is_in_shopping_cart(self, obj)
+        return in_list(self, obj, ShoppingCart)
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')

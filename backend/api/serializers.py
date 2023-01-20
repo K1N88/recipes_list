@@ -112,6 +112,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')
+        print(ingredients)
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -120,6 +121,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')
+        print(ingredients)
         tags = validated_data.pop('tags')
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)

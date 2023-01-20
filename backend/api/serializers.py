@@ -59,7 +59,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(),
+                                            source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
@@ -93,7 +94,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     ingredients = RecipeIngredientSerializer(
-        many=True
+        many=True, source='ingredient_recipe'
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -111,8 +112,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return in_list(self, obj, ShoppingCart)
 
     def create(self, validated_data):
-        print(validated_data)
-        ingredients = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredient_recipe')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -120,8 +120,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        print(validated_data)
-        ingredients = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredient_recipe')
         tags = validated_data.pop('tags')
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)

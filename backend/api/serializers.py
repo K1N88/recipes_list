@@ -59,7 +59,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient')
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all(),
+                                            read_only=True)
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
@@ -130,8 +131,8 @@ class RecipePostSerializer(serializers.ModelSerializer):
             instance.cooking_time
         )
         instance.save()
+        # RecipeIngredient.objects.filter(recipe=instance).delete()
         instance.tags.set(tags)
-        RecipeIngredient.objects.filter(recipe=instance).delete()
         set_ingredients(instance, ingredients)
         return instance
 

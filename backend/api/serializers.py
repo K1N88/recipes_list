@@ -75,8 +75,7 @@ def set_ingredients(recipe, ingredients):
     RecipeIngredient.objects.bulk_create([RecipeIngredient(
         recipe=recipe,
         ingredient=ingredient['id'],
-        amount=ingredient['amount']
-    ) for ingredient in ingredients])
+        amount=ingredient['amount']) for ingredient in ingredients])
 
 
 def in_list(self, obj, model):
@@ -130,9 +129,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
             instance.cooking_time
         )
         instance.save()
-        # RecipeIngredient.objects.filter(recipe=instance).delete()
+        print(instance)
+        RecipeIngredient.objects.filter(recipe=instance).delete()
         instance.tags.set(tags)
         set_ingredients(instance, ingredients)
+        print(instance)
         return instance
 
 

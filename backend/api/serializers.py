@@ -87,6 +87,7 @@ def in_list(self, obj, model):
 
 
 class RecipePostSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer(read_only=True)
     image = Base64ImageField(max_length=None, use_url=True)
     cooking_time = serializers.IntegerField(min_value=1)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
@@ -94,11 +95,14 @@ class RecipePostSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         source='ingredient_recipe', many=True
     )
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
-        fields = ('tags', 'author', 'ingredients',
-                  'name', 'image', 'text', 'cooking_time')
+        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
+                  'is_in_shopping_cart', 'name', 'image', 'text',
+                  'cooking_time')
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')

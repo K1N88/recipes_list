@@ -71,14 +71,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-def set_ingredients(recipe, ingredients):
-    RecipeIngredient.objects.bulk_create([RecipeIngredient(
-        recipe=recipe,
-        ingredient=ingredient['id'],
-        amount=ingredient['amount']
-    ) for ingredient in ingredients])
-
-
 def in_list(self, obj, model):
     if not self.context['request'].user.is_authenticated:
         return False
@@ -116,7 +108,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        set_ingredients(recipe, ingredients)
+        RecipeIngredient.objects.bulk_create([RecipeIngredient(
+            recipe=recipe,
+            ingredient=ingredient['id'],
+            amount=ingredient['amount']
+        ) for ingredient in ingredients])
         return recipe
 
     def update(self, instance, validated_data):
@@ -131,10 +127,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
         )
         instance.save()
         instance.tags.set(tags)
-        RecipeIngredient.objects.filter(
+        RecipeIngredient.objects.bulk_update([RecipeIngredient(
             recipe=instance,
-        ).delete()
-        set_ingredients(instance, ingredients)
+            ingredient=ingredient['id'],
+            amount=ingredient['amount']
+        ) for ingredient in ingredients])
         return instance
 
 

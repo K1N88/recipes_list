@@ -131,7 +131,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
             recipe=instance,
             ingredient=ingredient['id'],
             amount=ingredient['amount']
-        ) for ingredient in ingredients])
+        ) for ingredient in ingredients], ['recipe', 'ingredient', 'amount'])
         return instance
 
 

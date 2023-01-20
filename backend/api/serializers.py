@@ -132,7 +132,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         instance.save()
         print(instance.ingredients.all())
         print(ingredients)
-        RecipeIngredient.objects.filter(recipe=instance).delete()
+        RecipeIngredient.objects.filter(recipe=instance).amount.delete()
         instance.tags.set(tags)
         set_ingredients(instance, ingredients)
         print(instance.ingredients.all())

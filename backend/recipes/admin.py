@@ -8,6 +8,7 @@ from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
 admin.site.register(Tag)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
+admin.site.register(RecipeIngredient)
 
 
 class RecipeIngredientInline(admin.TabularInline):

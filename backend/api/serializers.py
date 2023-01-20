@@ -104,6 +104,12 @@ class RecipePostSerializer(serializers.ModelSerializer):
                   'is_in_shopping_cart', 'name', 'image', 'text',
                   'cooking_time')
 
+    def get_is_favorited(self, obj):
+        return in_list(self, obj, Favorite)
+
+    def get_is_in_shopping_cart(self, obj):
+        return in_list(self, obj, ShoppingCart)
+
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredient_recipe')
         tags = validated_data.pop('tags')

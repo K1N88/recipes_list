@@ -31,6 +31,9 @@ class Ingredient(models.Model):
     class Meta:
         ordering = ['name']
 
+    def __str__(self):
+        return f'''{self.name} - {self.measurement_unit}'''
+
 
 class Recipe(models.Model):
     author = models.ForeignKey(
@@ -88,8 +91,7 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite_user',  # получаем queryset
-                                       # в сериалайзерах стр 84
+        related_name='favorite_user',
         verbose_name='пользователь',
     )
     recipe = models.ForeignKey(
@@ -103,8 +105,7 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='cart_user',  # получаем queryset
-                                   # в сериалайзерах стр 90
+        related_name='cart_user',
         verbose_name='пользователь',
     )
     recipe = models.ForeignKey(

@@ -119,6 +119,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
+        print(validated_data)
         ingredients = validated_data.pop('ingredient_recipe')
         tags = validated_data.pop('tags')
         instance.name = validated_data.get('name', instance.name)

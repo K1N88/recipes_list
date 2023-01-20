@@ -8,7 +8,6 @@ from recipes.models import (Ingredient, Tag, Recipe, ShoppingCart,
 admin.site.register(Tag)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
-admin.site.register(RecipeIngredient)
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -37,3 +36,11 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     search_fields = ('name',)
     ordering = ('name',)
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'ingredient', 'recipe', 'amount')
+    list_filter = ('recipe',)
+    search_fields = ('recipe', 'ingredient')
+    ordering = ('id',)

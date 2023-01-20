@@ -94,9 +94,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
     is_in_shopping_cart = serializers.SerializerMethodField()
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
-    ingredients = RecipeIngredientSerializer(
-        source='ingredient_recipe', many=True
-    )
+    ingredients = RecipeIngredientSerializer(many=True)
 
     class Meta:
         model = Recipe
@@ -111,7 +109,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return in_list(self, obj, ShoppingCart)
 
     def create(self, validated_data):
-        ingredients = validated_data.pop('ingredient_recipe')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -119,8 +117,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        print(validated_data)
-        ingredients = validated_data.pop('ingredient_recipe')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
@@ -130,12 +127,9 @@ class RecipePostSerializer(serializers.ModelSerializer):
             instance.cooking_time
         )
         instance.save()
-        print(instance.ingredients.all())
-        print(ingredients)
-        RecipeIngredient.objects.filter(recipe=instance).amount.delete()
+        RecipeIngredient.objects.filter(recipe=instance).delete()
         instance.tags.set(tags)
         set_ingredients(instance, ingredients)
-        print(instance.ingredients.all())
         return instance
 
 
